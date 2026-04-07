@@ -15,10 +15,12 @@ jobs:
       - name: Install devkitPro
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://apt.devkitpro.org/install-devkitpro-pacman
-          chmod +x install-devkitpro-pacman
-          sudo ./install-devkitpro-pacman
+          sudo apt-get install -y wget gnupg ca-certificates
+          sudo mkdir -p /etc/apt/keyrings
+          wget -qO- https://apt.devkitpro.org/devkitpro-keyring.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/devkitpro.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/devkitpro.gpg] https://apt.devkitpro.org stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
+          sudo apt-get update
+          sudo apt-get install -y devkitpro-pacman
           sudo dkp-pacman -Syu --noconfirm
           sudo dkp-pacman -S --noconfirm switch-dev
 
