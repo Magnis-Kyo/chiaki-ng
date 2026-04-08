@@ -40,7 +40,8 @@ jobs:
                 libavutil-dev \
                 libswscale-dev \
                 libswresample-dev \
-                libglm-dev
+                libglm-dev \
+                libssl-dev
 
               cd /workspace
               rm -rf build
@@ -57,7 +58,6 @@ jobs:
                 -DCHIAKI_ENABLE_PLACEBO=OFF \
                 -DCHIAKI_ENABLE_VULKAN=OFF
 
-              # specifically build switch target only
               ninja chiaki-switch || ninja switch || ninja
 
               echo "=== OUTPUT ==="
