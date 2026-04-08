@@ -45,24 +45,16 @@ jobs:
               mkdir -p /usr/lib/x86_64-linux-gnu
 
               SDL2_REAL="$(ldconfig -p | awk '"'"'/libSDL2-2\.0\.so\.0|libSDL2\.so\.0/ {print $NF; exit}'"'"')"
-              if [ -n "${SDL2_REAL:-}" ] && [ ! -e /usr/lib/x86_64-linux-gnu/libSDL2.so.0 ]; then
-                ln -sf "$SDL2_REAL" /usr/lib/x86_64-linux-gnu/libSDL2.so.0
-              fi
+              [ -n "${SDL2_REAL:-}" ] && ln -sf "$SDL2_REAL" /usr/lib/x86_64-linux-gnu/libSDL2.so.0 || true
 
               GLAPI_REAL="$(ldconfig -p | awk '"'"'/libglapi\.so\.0/ {print $NF; exit}'"'"')"
-              if [ -n "${GLAPI_REAL:-}" ] && [ ! -e /usr/lib/x86_64-linux-gnu/libglapi.so.0 ]; then
-                ln -sf "$GLAPI_REAL" /usr/lib/x86_64-linux-gnu/libglapi.so.0
-              fi
+              [ -n "${GLAPI_REAL:-}" ] && ln -sf "$GLAPI_REAL" /usr/lib/x86_64-linux-gnu/libglapi.so.0 || true
 
               DRM_NOUVEAU_REAL="$(ldconfig -p | awk '"'"'/libdrm_nouveau\.so\.2/ {print $NF; exit}'"'"')"
-              if [ -n "${DRM_NOUVEAU_REAL:-}" ] && [ ! -e /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 ]; then
-                ln -sf "$DRM_NOUVEAU_REAL" /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2
-              fi
+              [ -n "${DRM_NOUVEAU_REAL:-}" ] && ln -sf "$DRM_NOUVEAU_REAL" /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 || true
 
               GLFW_REAL="$(ldconfig -p | awk '"'"'/libglfw\.so\.3/ {print $NF; exit}'"'"')"
-              if [ -n "${GLFW_REAL:-}" ] && [ ! -e /usr/lib/x86_64-linux-gnu/libglfw.so.3.3 ]; then
-                ln -sf "$GLFW_REAL" /usr/lib/x86_64-linux-gnu/libglfw.so.3.3
-              fi
+              [ -n "${GLFW_REAL:-}" ] && ln -sf "$GLFW_REAL" /usr/lib/x86_64-linux-gnu/libglfw.so.3.3 || true
 
               cd /workspace/switch
               mkdir -p build
@@ -72,6 +64,8 @@ jobs:
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_MODULE_PATH=/workspace/cmake \
+                -DCMAKE_C_FLAGS="-I/workspace/include" \
+                -DCMAKE_CXX_FLAGS="-I/workspace/include" \
                 -DGLAPI=/usr/lib/x86_64-linux-gnu/libglapi.so.0 \
                 -DDRM_NOUVEAU=/usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2 \
                 -DSDL2=/usr/lib/x86_64-linux-gnu/libSDL2.so.0
