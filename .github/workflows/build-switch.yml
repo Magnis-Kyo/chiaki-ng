@@ -21,6 +21,15 @@ jobs:
             bash -lc "
               set -e
 
+              apt-get update
+              apt-get install -y \
+                cmake \
+                make \
+                pkg-config \
+                libglfw3-dev \
+                libgles2-mesa-dev \
+                libegl1-mesa-dev
+
               cd /workspace/switch
 
               mkdir -p build
@@ -31,7 +40,7 @@ jobs:
               make -j\$(nproc)
 
               echo '=== OUTPUT ==='
-              find . -name '*.nro'
+              find . -name '*.nro' -o -name '*.elf' -o -name '*.nacp'
             "
 
       - name: Upload artifact
@@ -41,3 +50,7 @@ jobs:
           path: |
             switch/build/*.nro
             switch/build/**/*.nro
+            switch/build/*.elf
+            switch/build/**/*.elf
+            switch/build/*.nacp
+            switch/build/**/*.nacp
