@@ -8,44 +8,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          path: chiaki-ng
 
-      - name: Install dependencies
+      - name: Build using devkitPro Docker
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake wget tar bzip2
-
-      - name: Install devkitPro (manual)
-        run: |
-          wget https://downloads.devkitpro.org/devkitpro-pacman.deb
-          sudo dpkg -i devkitpro-pacman.deb || true
-          sudo apt-get install -f -y
-          sudo dkp-pacman -Syu --noconfirm
-          sudo dkp-pacman -S --noconfirm switch-dev
-
-      - name: Set environment variables
-        run: |
-          echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
-          echo "DEVKITARM=/opt/devkitpro/devkitARM" >> $GITHUB_ENV
-
-      - name: Build Chiaki for Switch
-        run: |
-          cd chiaki-ng
-          mkdir build
-          cd build
-          cmake .. -DSWITCH=ON
-          make -j$(nproc)
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            devkitpro/devkita64:latest \
+            bash -c "
+              cd /workspace &&
+              mkdir -p build &&
+              cd build &&
+              cmake .. -DSWITCH=ON &&
+              make -j$(nproc)
+            "
 
       - name: Find build output
         run: |
-          find chiaki-ng -type f | grep -E '\.nro$' || true
+          find . -type f -name '*.nro' || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: chiaki-switch-build
-          path: chiaki-ng/build/**/*.nro
+          path: |
+            build/*.nro
+            **/*.nro
