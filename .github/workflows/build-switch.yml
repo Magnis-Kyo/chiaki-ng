@@ -36,5 +36,4 @@ jobs:
         with:
           name: chiaki-ng.nro
           path: chiaki-ng/build_switch/switch/chiaki-ng.nro
-          if-no-files-found: error
           retention-days: 7
