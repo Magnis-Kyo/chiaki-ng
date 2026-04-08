@@ -39,9 +39,9 @@ jobs:
                 libavformat-dev \
                 libavutil-dev \
                 libswscale-dev \
-                libswresample-dev
+                libswresample-dev \
+                libglm-dev
 
-              # Normalize host library paths that the switch sub-build hardcodes/records.
               mkdir -p /usr/lib/x86_64-linux-gnu
 
               SDL2_REAL="$(ldconfig -p | awk '"'"'/libSDL2-2\.0\.so\.0|libSDL2\.so\.0/ {print $NF; exit}'"'"')"
