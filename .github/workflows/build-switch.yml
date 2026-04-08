@@ -13,7 +13,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build root project with Switch target
+      - name: Build Chiaki-ng
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
@@ -21,53 +21,41 @@ jobs:
             bash -lc '
               set -euxo pipefail
 
-              apt-get update
-              apt-get install -y \
-                cmake \
-                ninja-build \
-                pkg-config \
-                protobuf-compiler \
-                libprotobuf-dev \
-                libssl-dev \
-                libglfw3-dev \
-                libsdl2-dev \
-                libegl1-mesa-dev \
-                libgles2-mesa-dev \
-                libgl1-mesa-dev \
-                libdrm-dev \
-                libdav1d-dev \
-                libavcodec-dev \
-                libavformat-dev \
-                libavutil-dev \
-                libswscale-dev \
-                libswresample-dev \
-                libglm-dev \
-                libopus-dev
+              # 1. Install Switch-specific dependencies via dkp-pacman
+              # We need the switch- versions of these libraries, not the apt-get versions
+              dkp-pacman -Syyu --noconfirm
+              dkp-pacman -S --noconfirm \
+                switch-dev \
+                switch-sdl2 \
+                switch-ffmpeg \
+                switch-opus \
+                switch-mbedtls \
+                switch-protobuf \
+                switch-libvpx \
+                switch-libyuv \
+                switch-curl \
+                switch-cmake \
+                switch-pkg-config
 
               cd /workspace
               rm -rf build
               mkdir build
               cd build
 
+              # 2. Use the Switch toolchain file provided by devkitPro
+              # This tells CMake exactly how to build for the Switch hardware
               cmake .. \
                 -G Ninja \
+                -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_MODULE_PATH=/workspace/cmake \
                 -DNSWITCH=ON \
                 -DCHIAKI_ENABLE_GUI=OFF \
                 -DCHIAKI_ENABLE_CLI=OFF \
-                -DCHIAKI_ENABLE_TESTS=OFF \
-                -DCHIAKI_ENABLE_STEAM_SHORTCUT=OFF \
-                -DCHIAKI_ENABLE_STEAMDECK_NATIVE=OFF \
                 -DCHIAKI_ENABLE_BOREALIS=ON \
                 -DCHIAKI_ENABLE_FFMPEG_DECODER=ON \
-                -DCHIAKI_ENABLE_PI_DECODER=OFF \
-                -DCHIAKI_USE_SYSTEM_CURL=OFF
+                -DCHIAKI_USE_SYSTEM_CURL=ON
 
-              ninja chiaki-borealis || ninja switch || ninja
-
-              echo "=== OUTPUT FILES ==="
-              find . -type f | grep -E "\.(nro|elf|nacp)$" || true
+              ninja
             '
 
       - name: Upload artifact
@@ -75,9 +63,6 @@ jobs:
         with:
           name: chiaki-switch-build
           path: |
-            build/**/*.nro
-            build/**/*.elf
-            build/**/*.nacp
             build/*.nro
             build/*.elf
             build/*.nacp
