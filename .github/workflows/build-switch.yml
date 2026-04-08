@@ -13,7 +13,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build (root project with Switch target)
+      - name: Build Switch version (clean target)
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
@@ -50,10 +50,15 @@ jobs:
               cmake .. \
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_MODULE_PATH=/workspace/cmake
+                -DCMAKE_MODULE_PATH=/workspace/cmake \
+                -DCHIAKI_ENABLE_GUI=OFF \
+                -DCHIAKI_ENABLE_SDL=OFF \
+                -DCHIAKI_ENABLE_FFMPEG=ON \
+                -DCHIAKI_ENABLE_PLACEBO=OFF \
+                -DCHIAKI_ENABLE_VULKAN=OFF
 
-              # build EVERYTHING including switch target
-              ninja
+              # specifically build switch target only
+              ninja chiaki-switch || ninja switch || ninja
 
               echo "=== OUTPUT ==="
               find . -type f | grep -E "\.(nro|elf|nacp)$" || true
