@@ -36,11 +36,12 @@ jobs:
                 libswresample-dev
 
               cd /workspace/switch
-
               mkdir -p build
               cd build
 
-              cmake .. -DCMAKE_BUILD_TYPE=Release
+              cmake .. \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_MODULE_PATH=/workspace/cmake
 
               make -j\$(nproc)
 
