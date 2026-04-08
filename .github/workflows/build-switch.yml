@@ -29,7 +29,6 @@ jobs:
                 protobuf-compiler \
                 libprotobuf-dev \
                 libssl-dev \
-                libcurl4-openssl-dev \
                 libglfw3-dev \
                 libsdl2-dev \
                 libegl1-mesa-dev \
@@ -62,7 +61,7 @@ jobs:
                 -DCHIAKI_ENABLE_BOREALIS=ON \
                 -DCHIAKI_ENABLE_FFMPEG_DECODER=ON \
                 -DCHIAKI_ENABLE_PI_DECODER=OFF \
-                -DCHIAKI_USE_SYSTEM_CURL=ON
+                -DCHIAKI_USE_SYSTEM_CURL=OFF
 
               ninja chiaki-borealis || ninja switch || ninja
 
