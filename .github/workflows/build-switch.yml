@@ -41,7 +41,8 @@ jobs:
                 libavutil-dev \
                 libswscale-dev \
                 libswresample-dev \
-                libglm-dev
+                libglm-dev \
+                libopus-dev
 
               cd /workspace
               rm -rf build
@@ -65,7 +66,7 @@ jobs:
 
               ninja chiaki-borealis || ninja switch || ninja
 
-              echo "=== OUTPUT ==="
+              echo "=== OUTPUT FILES ==="
               find . -type f | grep -E "\.(nro|elf|nacp)$" || true
             '
 
