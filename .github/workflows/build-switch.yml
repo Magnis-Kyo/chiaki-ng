@@ -30,8 +30,8 @@ jobs:
                 -DCHIAKI_ENABLE_GUI=OFF \
                 -DCHIAKI_ENABLE_CLI=OFF \
                 -DCHIAKI_ENABLE_TESTS=OFF \
-                -DCHIAKI_ENABLE_STEAM=OFF \
-                -DCHIAKI_ENABLE_FFMPEG=OFF \
+                -DCHIAKI_ENABLE_STEAM_SHORTCUT=OFF \
+                -DCHIAKI_ENABLE_STEAMDECK_NATIVE=OFF \
                 -DCHIAKI_ENABLE_BOREALIS=ON
 
               make -j\$(nproc)
