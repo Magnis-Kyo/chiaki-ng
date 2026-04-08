@@ -13,7 +13,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build Switch version
+      - name: Build (root project with Switch target)
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
@@ -42,32 +42,17 @@ jobs:
                 libswresample-dev \
                 libglm-dev
 
-              SDL2_REAL="$(readlink -f "$(ldconfig -p | awk '"'"'/libSDL2-2\.0\.so\.0|libSDL2\.so\.0/ {print $NF; exit}'"'"')")"
-              GLAPI_REAL="$(readlink -f "$(ldconfig -p | awk '"'"'/libglapi\.so\.0/ {print $NF; exit}'"'"')")"
-              DRM_NOUVEAU_REAL="$(readlink -f "$(ldconfig -p | awk '"'"'/libdrm_nouveau\.so\.2/ {print $NF; exit}'"'"')")"
-              GLFW_REAL="$(readlink -f "$(ldconfig -p | awk '"'"'/libglfw\.so\.3/ {print $NF; exit}'"'"')")"
-
-              test -n "$SDL2_REAL"
-              test -n "$GLAPI_REAL"
-              test -n "$DRM_NOUVEAU_REAL"
-              test -n "$GLFW_REAL"
-
-              cd /workspace/switch
+              cd /workspace
               rm -rf build
-              mkdir -p build
+              mkdir build
               cd build
 
               cmake .. \
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_MODULE_PATH=/workspace/cmake \
-                -DCMAKE_C_FLAGS="-I/workspace/include" \
-                -DCMAKE_CXX_FLAGS="-I/workspace/include" \
-                -DGLAPI="$GLAPI_REAL" \
-                -DDRM_NOUVEAU="$DRM_NOUVEAU_REAL" \
-                -DSDL2="$SDL2_REAL" \
-                -Dglfw3_DIR=/usr/lib/x86_64-linux-gnu/cmake/glfw3
+                -DCMAKE_MODULE_PATH=/workspace/cmake
 
+              # build EVERYTHING including switch target
               ninja
 
               echo "=== OUTPUT ==="
@@ -79,9 +64,9 @@ jobs:
         with:
           name: chiaki-switch-build
           path: |
-            switch/build/**/*.nro
-            switch/build/**/*.elf
-            switch/build/**/*.nacp
-            switch/build/*.nro
-            switch/build/*.elf
-            switch/build/*.nacp
+            build/**/*.nro
+            build/**/*.elf
+            build/**/*.nacp
+            build/*.nro
+            build/*.elf
+            build/*.nacp
