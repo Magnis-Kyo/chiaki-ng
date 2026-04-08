@@ -13,73 +13,26 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build using devkitPro Docker (nuclear mode)
+      - name: Build Switch version directly
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
             devkitpro/devkita64:latest \
             bash -lc "
-              set -euxo pipefail
+              set -e
 
-              apt-get update
-              apt-get install -y \
-                protobuf-compiler \
-                libprotobuf-dev \
-                pkg-config \
-                python3 \
-                python3-pip \
-                sed \
-                grep \
-                findutils
-
-              cd /workspace
-
-              # Force-disable desktop-only / optional stuff that keeps breaking Switch CI
-              sed -i 's/option(CHIAKI_ENABLE_GUI .*$/option(CHIAKI_ENABLE_GUI \"\" OFF)/' CMakeLists.txt || true
-              sed -i 's/option(CHIAKI_ENABLE_CLI .*$/option(CHIAKI_ENABLE_CLI \"\" OFF)/' CMakeLists.txt || true
-              sed -i 's/option(CHIAKI_ENABLE_TESTS .*$/option(CHIAKI_ENABLE_TESTS \"\" OFF)/' CMakeLists.txt || true
-              sed -i 's/option(CHIAKI_ENABLE_STEAM_SHORTCUT .*$/option(CHIAKI_ENABLE_STEAM_SHORTCUT \"\" OFF)/' CMakeLists.txt || true
-              sed -i 's/option(CHIAKI_ENABLE_STEAMDECK_NATIVE .*$/option(CHIAKI_ENABLE_STEAMDECK_NATIVE \"\" OFF)/' CMakeLists.txt || true
-              sed -i 's/option(CHIAKI_ENABLE_FFMPEG_DECODER .*$/option(CHIAKI_ENABLE_FFMPEG_DECODER \"\" OFF)/' CMakeLists.txt || true
-              sed -i 's/option(CHIAKI_ENABLE_PI_DECODER .*$/option(CHIAKI_ENABLE_PI_DECODER \"\" OFF)/' CMakeLists.txt || true
-              sed -i 's/option(CHIAKI_ENABLE_BOREALIS .*$/option(CHIAKI_ENABLE_BOREALIS \"\" ON)/' CMakeLists.txt || true
-
-              # Belt-and-suspenders: remove hard pkg checks if they still exist
-              sed -i '/libplacebo/d' CMakeLists.txt || true
-              sed -i '/FFMPEG/d' CMakeLists.txt || true
-              sed -i '/ILClient/d' CMakeLists.txt || true
-
-              mkdir -p build
-              cd build
-
-              cmake .. \
-                -DNSWITCH=ON \
-                -DCHIAKI_ENABLE_GUI=OFF \
-                -DCHIAKI_ENABLE_CLI=OFF \
-                -DCHIAKI_ENABLE_TESTS=OFF \
-                -DCHIAKI_ENABLE_STEAM_SHORTCUT=OFF \
-                -DCHIAKI_ENABLE_STEAMDECK_NATIVE=OFF \
-                -DCHIAKI_ENABLE_FFMPEG_DECODER=OFF \
-                -DCHIAKI_ENABLE_PI_DECODER=OFF \
-                -DCHIAKI_ENABLE_BOREALIS=ON
+              cd /workspace/switch
 
               make -j\$(nproc)
 
-              echo '=== BUILD OUTPUTS ==='
-              find /workspace -type f | grep -E '\.nro$|\.elf$|\.nacp$' || true
+              echo '=== OUTPUT ==='
+              find . -name '*.nro'
             "
-
-      - name: Find build output
-        run: |
-          find . -type f | grep -E '\.nro$|\.elf$|\.nacp$' || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: chiaki-switch-build
           path: |
-            build/*.nro
-            build/**/*.nro
-            **/*.nro
-            **/*.elf
-            **/*.nacp
+            switch/*.nro
+            switch/**/*.nro
