@@ -13,7 +13,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build Switch version (clean target)
+      - name: Build Switch version (minimal target)
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
@@ -52,13 +52,16 @@ jobs:
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_MODULE_PATH=/workspace/cmake \
+                -DBUILD_TESTING=OFF \
                 -DCHIAKI_ENABLE_GUI=OFF \
                 -DCHIAKI_ENABLE_SDL=OFF \
-                -DCHIAKI_ENABLE_FFMPEG=ON \
                 -DCHIAKI_ENABLE_PLACEBO=OFF \
-                -DCHIAKI_ENABLE_VULKAN=OFF
+                -DCHIAKI_ENABLE_VULKAN=OFF \
+                -DCHIAKI_ENABLE_STEAM=OFF \
+                -DCHIAKI_ENABLE_CURL=ON
 
-              ninja chiaki-switch || ninja switch || ninja
+              # build only switch binary
+              ninja chiaki-switch || ninja switch
 
               echo "=== OUTPUT ==="
               find . -type f | grep -E "\.(nro|elf|nacp)$" || true
