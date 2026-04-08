@@ -22,7 +22,7 @@ jobs:
               cd /workspace &&
               mkdir -p build &&
               cd build &&
-              cmake .. -DSWITCH=ON &&
+              cmake .. -DSWITCH=ON -DENABLE_PLACEBO=OFF &&
               make -j$(nproc)
             "
 
