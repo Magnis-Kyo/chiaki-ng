@@ -13,7 +13,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build Switch version directly
+      - name: Build Switch version (correct way)
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
@@ -22,6 +22,11 @@ jobs:
               set -e
 
               cd /workspace/switch
+
+              mkdir -p build
+              cd build
+
+              cmake .. -DCMAKE_BUILD_TYPE=Release
 
               make -j\$(nproc)
 
@@ -34,5 +39,5 @@ jobs:
         with:
           name: chiaki-switch-build
           path: |
-            switch/*.nro
-            switch/**/*.nro
+            switch/build/*.nro
+            switch/build/**/*.nro
