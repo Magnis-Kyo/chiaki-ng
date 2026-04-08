@@ -18,15 +18,15 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
             devkitpro/devkita64:latest \
-            bash -c "
+            bash -lc "
               set -e
               cd /workspace
-
-              sed -i 's/pkg_check_modules(LIBPLACEBO REQUIRED libplacebo>=7.349.0)/# disabled for switch build/g' CMakeLists.txt
-
               mkdir -p build
               cd build
-              cmake .. -DSWITCH=ON
+              cmake .. \
+                -DNSWITCH=ON \
+                -DCHIAKI_ENABLE_GUI=OFF \
+                -DCHIAKI_ENABLE_BOREALIS=ON
               make -j\$(nproc)
             "
 
