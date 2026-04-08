@@ -21,12 +21,19 @@ jobs:
             bash -lc "
               set -e
               cd /workspace
+
               mkdir -p build
               cd build
+
               cmake .. \
                 -DNSWITCH=ON \
                 -DCHIAKI_ENABLE_GUI=OFF \
+                -DCHIAKI_ENABLE_CLI=OFF \
+                -DCHIAKI_ENABLE_TESTS=OFF \
+                -DCHIAKI_ENABLE_STEAM=OFF \
+                -DCHIAKI_ENABLE_FFMPEG=OFF \
                 -DCHIAKI_ENABLE_BOREALIS=ON
+
               make -j\$(nproc)
             "
 
